@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine 💖</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffe4ec;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+    .card {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      text-align: center;
+      position: relative;
+      width: 320px;
+      z-index: 10;
+    }
+    h1 { margin-bottom: 1.5rem; }
+    .buttons {
+      position: relative;
+      height: 140px;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    #yesBtn { background: #e11d48; color: white; }
+    #noBtn  { background: #e5e7eb; position: absolute; }
+
+    .love-screen {
+      text-align: center;
+      display: none;
+      z-index: 10;
+    }
+    .love-screen h1 {
+      font-size: 3rem;
+      color: #e11d48;
+      margin-bottom: 1rem;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+    .confetti span {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: red;
+      top: -10px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    /* Floating hearts */
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #e11d48;
+      transform: rotate(45deg);
+      animation: floatUp linear infinite;
+      opacity: 0.8;
+    }
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #e11d48;
+      border-radius: 50%;
+    }
+    .heart::before { top: -10px; left: 0; }
+    .heart::after  { left: -10px; top: 0; }
+
+    @keyframes floatUp {
+      from { transform: translateY(100vh) rotate(45deg) scale(0.8); }
+      to   { transform: translateY(-120px) rotate(45deg) scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="heartBox"></div>
+
+  <div id="mainCard" class="card">
+    <h1>Agata, will you be my Valentine? 💖</h1>
+    <div class="buttons" id="buttonArea">
+      <button id="yesBtn">YES</button>
+      <button id="noBtn">NO</button>
+    </div>
+  </div>
+
+  <div id="loveScreen" class="love-screen">
+    <div class="confetti" id="confetti"></div>
+    <h1>I LOVE YOU AGATA ❤️</h1>
+    <p>Love, Nichollas 💕</p>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const area  = document.getElementById('buttonArea');
+    const card  = document.getElementById('mainCard');
+    const love  = document.getElementById('loveScreen');
+    const confettiBox = document.getElementById('confetti');
+    const heartBox = document.getElementById('heartBox');
+
+    function moveNo() {
+      const areaRect = area.getBoundingClientRect();
+      const maxX = areaRect.width - noBtn.offsetWidth;
+      const maxY = areaRect.height - noBtn.offsetHeight;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+    }
+
+    noBtn.addEventListener('mouseenter', moveNo);
+    moveNo();
+
+    yesBtn.addEventListener('click', () => {
+      card.style.display = 'none';
+      love.style.display = 'block';
+      makeConfetti();
+      explodeHearts();
+    });
+
+    function makeConfetti() {
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('span');
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = ['#e11d48','#f43f5e','#fb7185','#facc15','#22c55e'][Math.floor(Math.random()*5)];
+        piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+        piece.style.opacity = Math.random();
+        confettiBox.appendChild(piece);
+      }
+    }
+
+    function spawnHearts() {
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (6 + Math.random() * 6) + 's';
+        heart.style.opacity = Math.random();
+        heartBox.appendChild(heart);
+      }
+    }
+
+    spawnHearts();
+
+    function explodeHearts() {
+      const hearts = document.querySelectorAll('.heart');
+      hearts.forEach(heart => {
+        heart.style.animation = 'none';
+        const x = (Math.random() - 0.5) * 600;
+        const y = (Math.random() - 0.5) * 600;
+        heart.animate([
+          { transform: 'translate(0,0) scale(1) rotate(45deg)', opacity: 1 },
+          { transform: `translate(${x}px, ${y}px) scale(2) rotate(45deg)`, opacity: 0 }
+        ], { duration: 1000, easing: 'ease-out', fill: 'forwards' });
+      });
+    }
+  </script>
+</body>
+</html>
+
